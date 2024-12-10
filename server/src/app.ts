@@ -6,6 +6,7 @@ import { connectDB } from './config/db';
 import { errorHandler } from './middlewares/errorHandler';
 import userRouter from './core/user/user.routes';
 import { config } from './config/config';
+import roleRouter from './core/role/role.routes';
 
 const app: Express = express();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/webhook', userRouter);
+app.use('/api/role', roleRouter);
 
 app.use(errorHandler);
 

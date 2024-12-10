@@ -1,14 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './styles/globals.css';
-import Header from './shared/components/ui/header';
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs';
+import Header from '../shared/components/ui/header';
+import { ClerkProvider } from '@clerk/nextjs';
+import QueryProvider from '@/shared/api/QueryProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,18 +18,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    //@ts-ignore
-    <ClerkProvider>
-      <html lang='en'>
-        <body className={inter.className}>
-          <div className='flex flex-col h-screen w-full'>
-            <Header />
-            <div className='grow flex-1 overflow-y-auto h-[calc(100vh-var(--header-height)]'>
-              {children}
+    <QueryProvider>
+      {/* @ts-ignore*/}
+      <ClerkProvider>
+        <html lang='en'>
+          <body className={inter.className}>
+            <div className='flex flex-col h-screen w-full'>
+              <Header />
+              <div className='grow flex-1 overflow-y-auto h-[calc(100vh-var(--header-height)]'>
+                {children}
+              </div>
             </div>
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+          </body>
+        </html>
+      </ClerkProvider>
+    </QueryProvider>
   );
 }

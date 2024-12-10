@@ -1,5 +1,5 @@
 'use client';
-import { UserButton, useUser, SignInButton } from '@clerk/nextjs';
+import { UserButton, useUser, SignUpButton } from '@clerk/nextjs';
 import Link from 'next/link';
 
 const Header = () => {
@@ -12,7 +12,7 @@ const Header = () => {
             Logo🇺🇦
           </div>
         </Link>
-        {isSignedIn ? <UserButton /> : <SignInButton />}
+        {isSignedIn ? <UserButton /> : <SignUpButton />}
       </div>
     </div>
   );
