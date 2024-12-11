@@ -7,4 +7,22 @@ const http = axios.create({
   },
 });
 
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      console.log('Unauthorized');
+
+      console.log(error);
+    }
+    if (error.response?.status === 403) {
+      console.error('Permission denied');
+    }
+    if (error.response?.status === 500) {
+      console.error('Server error occurred');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default http;

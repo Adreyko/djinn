@@ -7,4 +7,6 @@ export const config = {
   port: process.env.PORT,
   mongoUri: process.env.MONGO_URI ?? '',
   CLERK: process.env.SIGNING_SECRET,
+  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+  CLERK_ISSUER: process.env.CLERK_ISSUER,
 };

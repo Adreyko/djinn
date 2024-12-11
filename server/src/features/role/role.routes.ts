@@ -17,7 +17,7 @@ const roleRouter = Router();
 
 /**
  * @openapi
- * /api/roles:
+ * /api/role:
  *   get:
  *     tags: [Roles]
  *     summary: Get all available roles
@@ -38,7 +38,7 @@ roleRouter.get('/', roleController.getRoles);
 
 /**
  * @openapi
- * /api/roles/assign-role:
+ * /api/role/assign-role:
  *   post:
  *     tags: [Roles]
  *     summary: Assign role to user

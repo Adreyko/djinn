@@ -1,27 +1,17 @@
-import { UserCreate, IUser } from './types/user.interface';
+import { RoleModel } from '../../features/role/role.model';
+import { UserRoleModel } from '../../features/role/user-role.model';
+import { UserCreate, IUser, UserWithRole } from './types/user.interface';
 import { UserModel } from './user.model';
 
-export interface ClerkWebhookData {
-  data: {
-    id: string;
-    email_addresses: Array<{
-      email_address: string;
-      id: string;
-      verification: any;
-    }>;
-    username: string;
-    first_name?: string;
-    last_name?: string;
-    [key: string]: any;
-  };
-}
-
 export class UserService {
-  constructor(private userModel: typeof UserModel) {}
+  constructor(
+    private userModel: typeof UserModel,
+    private userRoleModel: typeof UserRoleModel,
+    private roleModel: typeof RoleModel
+  ) {}
 
   async create(data: UserCreate): Promise<IUser> {
     const created = (await this.userModel.create(data)).save();
-
     return created;
   }
 
@@ -29,7 +19,6 @@ export class UserService {
     const updated = await this.userModel.findByIdAndUpdate(id, data, {
       new: true,
     });
-
     return updated ? updated.save() : null;
   }
 
@@ -55,18 +44,22 @@ export class UserService {
     return user;
   };
 
-  public extractUserData(data: ClerkWebhookData['data']) {
-    if (!data.email_addresses?.[0]?.email_address) {
-      throw new Error('Email address is required');
+  getUser = async (id: string): Promise<any> => {
+    const user = await this.userModel.findOne({ clerkId: id });
+
+    if (!user) {
+      throw new Error('User not found');
     }
 
+    const userRole = await this.userRoleModel.findOne({ user: user.id });
+
+    const role = await this.roleModel.findById(userRole?.role);
+
     return {
-      clerkId: data.id,
-      email: data.email_addresses[0].email_address,
-      firstName: data.first_name,
-      lastName: data.last_name,
+      ...user.toObject(),
+      role: role ? role.name : 'employee',
     };
-  }
+  };
 }
 
-export const userService = new UserService(UserModel);
+export const userService = new UserService(UserModel, UserRoleModel, RoleModel);

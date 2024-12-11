@@ -41,6 +41,24 @@ export class RoleService {
     return role;
   };
 
+  public getRoleByUser = async (clerkId: string): Promise<string | null> => {
+    const user = await this.userService.findByClerkId(clerkId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userRole = await this.userRoleModel.findOne({ user: user.id });
+
+    if (!userRole) {
+      return null;
+    }
+
+    const role = await this.roleModel.findById(userRole.role);
+
+    return role?.name ?? null;
+  };
+
   private createRoles = async () => {
     await this.roleModel.create({ name: 'employee' });
     await this.roleModel.create({ name: 'employer' });

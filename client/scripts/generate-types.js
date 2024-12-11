@@ -11,10 +11,38 @@ if (!fs.existsSync(TYPES_DIR)) {
 }
 
 function createTypeFile(name, content) {
-  const baseName = name.replace(/\.ts$/, '');
-  const fileName = path.join(TYPES_DIR, `${baseName}.ts`);
+  const fileName = path.join(TYPES_DIR, `${name}.types.ts`);
   fs.writeFileSync(fileName, content);
   console.log(`Generated ${fileName}`);
+}
+
+function toCamelCase(str) {
+  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function getDependencies(schema, dependencies = new Set()) {
+  if (schema.$ref) {
+    const refType = schema.$ref.split('/').pop();
+    dependencies.add(refType);
+  } else if (schema.type === 'array' && schema.items) {
+    getDependencies(schema.items, dependencies);
+  } else if (schema.type === 'object' && schema.properties) {
+    Object.values(schema.properties).forEach((prop) => {
+      getDependencies(prop, dependencies);
+    });
+  }
+  return dependencies;
+}
+
+function generateImports(dependencies, currentType) {
+  return Array.from(dependencies)
+    .filter((dep) => dep !== currentType) // Don't import self
+    .map((dep) => `import { ${dep} } from './${dep.toLowerCase()}.types';`)
+    .join('\n');
 }
 
 http
@@ -28,38 +56,40 @@ http
     resp.on('end', () => {
       try {
         const swagger = JSON.parse(data);
-        const types = new Set();
+        const typeDefinitions = new Map();
 
+        // Process schemas
         if (swagger.components?.schemas) {
           Object.entries(swagger.components.schemas).forEach(
             ([name, schema]) => {
+              const dependencies = getDependencies(schema);
+              let typeContent = '';
+              const imports = generateImports(dependencies, name);
+
+              if (imports) {
+                typeContent += imports + '\n\n';
+              }
+
               if (schema.type === 'string' && schema.enum) {
-                createTypeFile(
-                  name,
-                  `export type ${name} = ${schema.enum
-                    .map((v) => `'${v}'`)
-                    .join(' | ')};`
-                );
-                types.add(name);
+                typeContent += `export type ${name} = ${schema.enum
+                  .map((v) => `'${v}'`)
+                  .join(' | ')};`;
               } else if (schema.type === 'object') {
-                const imports = [];
-                const properties = Object.entries(schema.properties || {})
+                const properties = Object.entries(schema.properties)
                   .map(([propName, prop]) => {
-                    let propType = 'any';
+                    let propType = 'string';
                     if (prop.$ref) {
-                      const refType = prop.$ref.split('/').pop();
-                      imports.push(refType);
-                      propType = refType;
+                      propType = prop.$ref.split('/').pop();
                     } else if (prop.type === 'array') {
                       if (prop.items.$ref) {
-                        const refType = prop.items.$ref.split('/').pop();
-                        imports.push(refType);
-                        propType = `${refType}[]`;
+                        propType = `${prop.items.$ref.split('/').pop()}[]`;
                       } else {
                         propType = `${prop.items.type}[]`;
                       }
+                    } else if (prop.type === 'string' && prop.enum) {
+                      propType = prop.enum.map((v) => `'${v}'`).join(' | ');
                     } else {
-                      propType = prop.type;
+                      propType = prop.type || 'string';
                     }
                     const isRequired = schema.required?.includes(propName);
                     return `  ${propName}${
@@ -68,25 +98,18 @@ http
                   })
                   .join('\n');
 
-                const importStatements = [...new Set(imports)]
-                  .map((type) => `import { ${type} } from './${type}';`)
-                  .join('\n');
-
-                createTypeFile(
-                  name,
-                  `${importStatements}\n\nexport interface ${name} {\n${properties}\n}`
-                );
-                types.add(name);
+                typeContent += `export interface ${name} {\n${properties}\n}`;
               }
+
+              typeDefinitions.set(name.toLowerCase(), typeContent);
             }
           );
-
-          const indexContent = Array.from(types)
-            .map((type) => `export * from './${type}';`)
-            .join('\n');
-
-          createTypeFile('index', indexContent);
         }
+
+        // Generate files
+        typeDefinitions.forEach((content, name) => {
+          createTypeFile(name, content);
+        });
       } catch (error) {
         console.error('Error generating types:', error);
         process.exit(1);

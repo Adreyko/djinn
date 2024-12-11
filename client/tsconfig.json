@@ -26,9 +26,6 @@
       "@/*": [
         "./*"
       ],
-      "@djinn/models": [
-        "../models"
-      ],
     },
   },
   "include": [

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './styles/globals.css';
-import Header from '../shared/components/ui/header';
+import Header from '@/shared/components/ui/header';
 import { ClerkProvider } from '@clerk/nextjs';
 import QueryProvider from '@/shared/api/QueryProvider';
 
