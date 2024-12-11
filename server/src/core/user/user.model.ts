@@ -1,5 +1,5 @@
+import { IUser } from '@djinn/models';
 import mongoose, { Schema } from 'mongoose';
-import { IUser } from './types/user.interface';
 
 const UserSchema = new Schema<IUser>(
   {

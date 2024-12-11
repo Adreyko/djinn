@@ -25,8 +25,11 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
-    }
+      ],
+      "@djinn/models": [
+        "../models"
+      ],
+    },
   },
   "include": [
     "next-env.d.ts",
@@ -36,5 +39,7 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+
+"
 }

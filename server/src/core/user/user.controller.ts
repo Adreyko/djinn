@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ClerkWebhookData, userService, UserService } from './user.service';
 import { IncomingHttpHeaders } from 'http';
 import { Webhook } from 'svix';

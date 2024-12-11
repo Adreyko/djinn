@@ -9,24 +9,21 @@ const RoleSelect = () => {
 
   const { data: roles, isLoading } = useGetRoles();
 
-  const roleOptions = [
-    {
-      label: 'I want to...',
-      items: roles?.data?.map((role) => ({
-        value: role,
-        label: getRoleLabel(role),
-      })),
-    },
-  ];
+  const roleOptions =
+    roles?.data?.map((role) => ({
+      value: role,
+      label: getRoleLabel(role),
+    })) ?? [];
 
   if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className='flex flex-col gap-2'>
       <GroupedSelect
+        label='I want to...'
         onChange={setRole}
         placeholder='Role'
-        groups={roleOptions}
+        items={roleOptions}
       />
       <Button disabled={!role}>Continue</Button>
     </div>
@@ -36,6 +33,7 @@ const RoleSelect = () => {
 const getRoleLabel = (role: string) => {
   if (role === 'employee') return 'I want to find someone to do some job';
   if (role === 'employer') return 'I want to find a job';
+  return 'Unknown role';
 };
 
 export default RoleSelect;

@@ -145,43 +145,42 @@ const SelectSeparator = React.forwardRef<
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
-interface GroupedSelectProps {
+interface GroupedSelectProps<T> {
   placeholder: string;
-  groups: {
+  items: {
+    value: T;
     label: string;
-    items: { value: string; label: string }[];
   }[];
   className?: string;
-  onChange?: (value: string) => void;
-  onSelect?: (value: string) => void;
+  onChange?: (value: T) => void;
+  onSelect?: (value: T) => void;
+  label: string;
 }
 
-const GroupedSelect = ({
+const GroupedSelect = <T,>({
   placeholder,
-  groups,
   className,
   onChange,
-  onSelect,
-}: GroupedSelectProps) => (
-  <Select onValueChange={(val) => onChange?.(val)}>
+  items = [],
+  label,
+}: GroupedSelectProps<T>) => (
+  <Select onValueChange={(val) => onChange?.(val as T)}>
     <SelectTrigger className={className}>
       <SelectValue placeholder={placeholder} />
     </SelectTrigger>
     <SelectContent>
-      {groups.map((group, index) => (
-        <SelectGroup onSelect={(val) => console.log(val)} key={index}>
-          <SelectLabel>{group.label}</SelectLabel>
-          {group.items.map((item) => (
-            <SelectItem
-              className='cursor-pointer'
-              key={item.value}
-              value={item.value}
-            >
-              {item.label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      ))}
+      <SelectGroup>
+        <SelectLabel>{label}</SelectLabel>
+        {items.map((item) => (
+          <SelectItem
+            className='cursor-pointer'
+            key={item.value as unknown as string}
+            value={item.value as unknown as string}
+          >
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectGroup>
     </SelectContent>
   </Select>
 );

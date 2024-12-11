@@ -15,10 +15,10 @@ export class RoleService {
     return roles.map((role) => role.name);
   };
 
-  public getRole = async (role: string): Promise<string | null> => {
+  public getRole = async (role: string): Promise<any> => {
     const foundRole = await this.roleModel.findOne({ name: role });
 
-    return foundRole?.name || null;
+    return foundRole ? foundRole : null;
   };
 
   public assignRole = async (
@@ -35,7 +35,7 @@ export class RoleService {
 
     await this.userRoleModel.create({
       user: user.id,
-      role: role,
+      role: role.id,
     });
 
     return role;

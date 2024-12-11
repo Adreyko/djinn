@@ -17,6 +17,29 @@ export class RoleController {
       });
     }
   };
+
+  public assignRole = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId, roleName } = req.body;
+
+      console.log('userId', userId);
+      console.log('roleName', roleName);
+
+      const role = await this.roleService.assignRole(userId, roleName);
+
+      res.status(200).json({
+        success: true,
+        data: role,
+      });
+    } catch (err) {
+      const error = err as Error;
+
+      res.status(error.message.includes('User not found') ? 404 : 500).json({
+        success: false,
+        message: error.message || 'Internal server error assigning role',
+      });
+    }
+  };
 }
 
 export const roleController = new RoleController(roleService);

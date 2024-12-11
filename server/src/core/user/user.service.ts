@@ -1,5 +1,5 @@
-import { UserCreate, IUser } from './types/user.interface';
 import { UserModel } from './user.model';
+import { UserCreate, IUser } from '@djinn/models';
 
 export interface ClerkWebhookData {
   data: {
