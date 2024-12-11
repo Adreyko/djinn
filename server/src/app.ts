@@ -1,12 +1,12 @@
 import express, { Express } from 'express';
-
 import cors from 'cors';
-
 import { connectDB } from './config/db';
 import { errorHandler } from './middlewares/errorHandler';
 import userRouter from './core/user/user.routes';
 import { config } from './config/config';
-import roleRouter from './core/role/role.routes';
+import roleRouter from './features/role/role.routes';
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './config/swagger';
 
 const app: Express = express();
 
@@ -16,6 +16,11 @@ app.use(express.json());
 
 app.use('/api/webhook', userRouter);
 app.use('/api/role', roleRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
+});
 
 app.use(errorHandler);
 

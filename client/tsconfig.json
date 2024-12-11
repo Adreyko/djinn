@@ -35,11 +35,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "scripts/generate-types.hs"
   ],
   "exclude": [
     "node_modules"
   ],
-
-"
 }

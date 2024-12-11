@@ -1,4 +1,4 @@
-import { UserService, userService } from './../user/user.service';
+import { UserService, userService } from '../../core/user/user.service';
 import { RoleModel } from './role.model';
 import { UserRoleModel } from './user-role.model';
 
