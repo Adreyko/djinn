@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use('/api/user', validateClerkToken, userRouter);
 app.use('/api/webhook', clerkRoute);
-app.use('/api/role', roleRouter);
+app.use('/api/role', validateClerkToken, roleRouter);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.get('/swagger.json', (req, res) => {

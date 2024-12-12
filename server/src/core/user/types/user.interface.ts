@@ -10,7 +10,7 @@ export interface IUser {
 }
 
 export interface UserWithRole extends IUser {
-  role: string;
+  role: string | null;
 }
 
 export type UserCreate = Omit<IUser, 'id' | 'createdAt' | 'updatedAt'>;

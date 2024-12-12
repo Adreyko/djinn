@@ -4,6 +4,8 @@ import './styles/globals.css';
 import Header from '@/shared/components/ui/header';
 import { ClerkProvider } from '@clerk/nextjs';
 import QueryProvider from '@/shared/api/QueryProvider';
+import UserProvider from '@/core/user/provider/user';
+import QueryDevTools from '@/shared/lib/components/QueryDevTools';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,16 +23,21 @@ export default function RootLayout({
     <QueryProvider>
       {/* @ts-ignore*/}
       <ClerkProvider>
-        <html lang='en'>
-          <body className={inter.className}>
-            <div className='flex flex-col h-screen w-full'>
-              <Header />
-              <div className='grow flex-1 overflow-y-auto h-[calc(100vh-var(--header-height)]'>
-                {children}
+        <UserProvider>
+          <html lang='en'>
+            <body className={inter.className}>
+              <div className='flex flex-col h-screen w-full'>
+                <Header />
+                <div className='grow flex-1 overflow-y-auto h-[calc(100vh-var(--header-height)] flex flex-col items-center '>
+                  <QueryDevTools />
+                  <div className='container flex flex-col justify-center mt-14'>
+                    {children}
+                  </div>
+                </div>
               </div>
-            </div>
-          </body>
-        </html>
+            </body>
+          </html>
+        </UserProvider>
       </ClerkProvider>
     </QueryProvider>
   );

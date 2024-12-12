@@ -44,7 +44,7 @@ export class UserService {
     return user;
   };
 
-  getUser = async (id: string): Promise<any> => {
+  getUser = async (id: string): Promise<UserWithRole> => {
     const user = await this.userModel.findOne({ clerkId: id });
 
     if (!user) {
@@ -57,7 +57,7 @@ export class UserService {
 
     return {
       ...user.toObject(),
-      role: role ? role.name : 'employee',
+      role: role ? role.name : null,
     };
   };
 }

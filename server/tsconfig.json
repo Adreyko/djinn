@@ -11,12 +11,13 @@
         "forceConsistentCasingInFileNames": true,
         "paths": {
             "@djinn/models": [
-                "../models/src"
+                "../model/index.ts"
             ]
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "../model/user/user.interface.ts"
     ],
     "exclude": [
         "node_modules",

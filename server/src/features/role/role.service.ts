@@ -1,3 +1,4 @@
+import { UserWithRole } from '../../core/user/types/user.interface';
 import { UserService, userService } from '../../core/user/user.service';
 import { RoleModel } from './role.model';
 import { UserRoleModel } from './user-role.model';
@@ -24,21 +25,21 @@ export class RoleService {
   public assignRole = async (
     clerkId: string,
     roleName: string
-  ): Promise<string | null> => {
+  ): Promise<UserWithRole> => {
     const user = await this.userService.findByClerkId(clerkId);
-
-    const role = await this.getRole(roleName);
 
     if (!user) {
       throw new Error('User not found');
     }
+
+    const role = await this.getRole(roleName);
 
     await this.userRoleModel.create({
       user: user.id,
       role: role.id,
     });
 
-    return role;
+    return await this.userService.getUser(clerkId);
   };
 
   public getRoleByUser = async (clerkId: string): Promise<string | null> => {

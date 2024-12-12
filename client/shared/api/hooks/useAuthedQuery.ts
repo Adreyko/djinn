@@ -6,8 +6,10 @@ import {
   useQuery,
   useMutation,
   QueryKey,
+  UseMutationOptions,
 } from '@tanstack/react-query';
 import http from '../http';
+import { AxiosError } from 'axios';
 
 const addAuthHeader = async (getToken: () => Promise<string | null>) => {
   const token = await getToken();
@@ -35,8 +37,12 @@ export function useAuthedQuery<TData = unknown, TError = unknown>(
 export function useAuthedMutation<
   TData = unknown,
   TVariables = unknown,
-  TError = unknown
->(url: string, method: 'post' | 'put' | 'delete' = 'post') {
+  TError = AxiosError
+>(
+  url: string,
+  method: 'post' | 'put' | 'delete' = 'post',
+  options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
+) {
   const { getToken } = useAuth();
 
   return useMutation<TData, TError, TVariables>({
@@ -45,5 +51,6 @@ export function useAuthedMutation<
       const { data } = await http[method]<TData>(url, variables, { headers });
       return data;
     },
+    ...options,
   });
 }

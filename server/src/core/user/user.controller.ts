@@ -37,6 +37,8 @@ export class UserController {
         return;
       }
 
+      console.log(user, 'user');
+
       res.status(200).json(user);
     } catch (err) {
       const error = err as Error;
