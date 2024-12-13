@@ -9,6 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import { specs } from './config/swagger';
 import clerkRoute from './core/clerk/clerk.routes';
 import validateClerkToken from './middlewares/validateClerk';
+import jobRouter from './features/job/job.router';
 
 const app: Express = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/user', validateClerkToken, userRouter);
 app.use('/api/webhook', clerkRoute);
 app.use('/api/role', validateClerkToken, roleRouter);
+app.use('/api/jobs', jobRouter);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.get('/swagger.json', (req, res) => {

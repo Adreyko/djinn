@@ -2,18 +2,46 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
-  ({ className, type, ...props }, ref) => {
+type HTMLInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange'
+>;
+
+export interface InputProps extends HTMLInputProps {
+  label?: string;
+  icon?: React.ReactNode;
+  onChange?: (value: string, name: string) => void;
+}
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, label, icon, type, readOnly, onChange, ...props }, ref) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e.target.value, e.target.name);
+    };
     return (
-      <input
-        type={type}
-        className={cn(
-          'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
+      <div className='flex flex-col gap-2 w-full relative text-sm'>
+        {label && <div className='text-base text-gray'>{label}</div>}
+        <div
+          className={cn(
+            'flex h-fit w-full rounded-lg bg-grayLight focus:border-0  text-gray relative  border border-input bg-transparent  text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+            { 'bg-transparent': readOnly },
+            className
+          )}
+        >
+          <input
+            disabled={readOnly}
+            onChange={handleChange}
+            type={type}
+            ref={ref}
+            {...props}
+            className={cn(
+              'bg-transparent  focus-visible:outline-none w-full h-full px-3 py-2',
+              { 'px-0': readOnly }
+            )}
+          />
+          {icon && <div className='h-full'>{icon}</div>}
+        </div>
+      </div>
     );
   }
 );
