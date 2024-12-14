@@ -18,6 +18,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(e.target.value, e.target.name);
     };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        onChange?.(
+          (e.target as HTMLInputElement).value,
+          (e.target as HTMLInputElement).name
+        );
+      }
+    };
+
     return (
       <div className='flex flex-col gap-2 w-full relative text-sm'>
         {label && <div className='text-base text-gray'>{label}</div>}
@@ -34,6 +45,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             {...props}
+            onKeyUp={handleKeyPress}
             className={cn(
               'bg-transparent  focus-visible:outline-none w-full h-full px-3 py-2',
               { 'px-0': readOnly }

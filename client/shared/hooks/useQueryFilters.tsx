@@ -1,20 +1,25 @@
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import QueryString from 'qs';
+import { Filters } from './useFilters';
 
-export const useQueryFilters = (filters: any) => {
-  const { search, value } = filters;
+export const useQueryFilters = (filters: Filters) => {
+  const { salary, selectedJobType, company, selectedYears, position } = filters;
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const params: any = {};
+    const params = {
+      ...(salary && { salary: salary }),
+      ...(selectedJobType && { jobType: selectedJobType }),
+      ...(company && { company: company }),
+      ...(selectedYears && { years: selectedYears }),
+      ...(position && { position: position }),
+    };
 
-    if (search) {
-      params.search = search;
-    }
-    const query = QueryString.stringify(params, { addQueryPrefix: true });
+    const query = QueryString.stringify(params, {
+      arrayFormat: 'comma',
+    });
 
-    router.push(`${query}`, { scroll: false });
-  }, [router, search, value]);
+    router.push(`?${query}`, { scroll: false });
+  }, [router, salary, selectedJobType, company, selectedYears, position]);
 };

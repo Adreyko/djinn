@@ -57,7 +57,7 @@ export function Combobox<T>({
       >
         <Command>
           <CommandList>
-            <CommandEmpty>{noItemsText}</CommandEmpty>
+            <CommandEmpty className='p-2'>{noItemsText}</CommandEmpty>
             <CommandGroup>
               {items?.map((item) => {
                 return (

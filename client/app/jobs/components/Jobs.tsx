@@ -1,11 +1,13 @@
 'use client';
 import { useGetJobs } from '@/shared/api/hooks/job/useGetJobs';
 import { CardLoader } from '@/shared/components/ui/loaders/card-loader';
-import { IJob } from '@/shared/types/job.interface';
+import { IJob } from '@/shared/types/job/job.interface';
 import { LogsIcon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import Title from './Title';
+import dayjs from 'dayjs';
+import { getCreatedTime } from '@/shared/lib/utils';
 
 const Jobs = () => {
   const { data: jobs, isLoading } = useGetJobs();
@@ -34,15 +36,21 @@ const JobCard = ({
   applicantsCount,
   location,
   requirements,
+  company,
+  yearsOfExperience,
+  createdAt,
 }: IJob) => {
   return (
     <div className='p-4'>
       <div className='flex flex-col gap-2'>
         <div className='flex items-center gap-2'>
           <LogsIcon className='w-5 h-5' />
-          {/* <span className='text-gray-400 text-sm'>{employer.name}</span> */}
+          <span className='text-gray-400 text-sm'>{company.name}</span>
           <span className='text-gray-400 text-sm'>
             {applicantsCount} applied
+          </span>
+          <span className='text-gray-400 text-sm'>
+            {getCreatedTime(createdAt)}
           </span>
         </div>
 
@@ -50,7 +58,7 @@ const JobCard = ({
           <div className='flex flex-col gap-2'>
             <div className='flex gap-2 items-center'>
               <Link href={'/job'}>
-                <h2 className='text-blue-400 text-2xl underline '>{title}</h2>
+                <h2 className='text-blue-400 text-2xl underline'>{title}</h2>
               </Link>
               <h3 className='font-medium text-green-500'>
                 {salary.min}$ - {salary.max}$
@@ -59,7 +67,7 @@ const JobCard = ({
 
             <div className='flex flex-col gap-1'>
               <p className='text-gray-400 text-sm'>
-                {location.type} • {location.country} • {requirements[0]}
+                {location.type} • {location.country} • {yearsOfExperience} years
               </p>
               <p className='text-gray-400 text-sm'>{description}</p>
             </div>

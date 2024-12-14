@@ -1,13 +1,12 @@
 import { Combobox } from '@/shared/components/ui/combox';
 import { Input } from '@/shared/components/ui/input';
-import { useQueryFilters } from '@/shared/hooks/useQueryFilters';
-import { useSearchParams } from 'next/navigation';
-import React, { FC, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 
 interface SearchProps {
   placeholder?: string;
   onSearch?: (value: string) => void;
   value?: string;
+  onSelect?: (value: string) => void;
 }
 
 const mockedCompanies = [
@@ -32,13 +31,9 @@ const companies = mockedCompanies.map((company) => ({
   name: company,
   logo: companyLogos[company],
 }));
-const CompanySearch: FC<SearchProps> = () => {
-  const searchParams = useSearchParams();
-  const [search, setSearch] = useState<string>(
-    searchParams.get('search') || ''
-  );
+const CompanySearch: FC<SearchProps> = ({ onSelect, value }) => {
+  const [search, setSearch] = useState<string>(value ?? '');
 
-  useQueryFilters({ search });
   const [openCombobox, setOpenCombobox] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -47,6 +42,9 @@ const CompanySearch: FC<SearchProps> = () => {
   const onCompanySelect = (company: string) => {
     setSearch(company);
     setOpenCombobox(false);
+
+    console.log(company);
+    onSelect?.(company);
   };
 
   const mappedCompanies = searchedCompanies.map(({ name, logo }) => ({
@@ -65,7 +63,7 @@ const CompanySearch: FC<SearchProps> = () => {
 
   return (
     <div className='flex flex-col'>
-      Find a company
+      <label> Find a company</label>
       <Combobox
         inputRef={inputRef}
         value={search}
