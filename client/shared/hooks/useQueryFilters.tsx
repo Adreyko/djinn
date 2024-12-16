@@ -4,16 +4,18 @@ import QueryString from 'qs';
 import { Filters } from './useFilters';
 
 export const useQueryFilters = (filters: Filters) => {
-  const { salary, selectedJobType, company, selectedYears, position } = filters;
+  const { salary, jobType, company, years, position, limit, page } = filters;
   const router = useRouter();
 
   useEffect(() => {
     const params = {
       ...(salary && { salary: salary }),
-      ...(selectedJobType && { jobType: selectedJobType }),
+      ...(jobType && { jobType: jobType }),
       ...(company && { company: company }),
-      ...(selectedYears && { years: selectedYears }),
+      ...(years && { years: years }),
       ...(position && { position: position }),
+      ...(limit && { limit: limit }),
+      ...(page && { page: page }),
     };
 
     const query = QueryString.stringify(params, {
@@ -21,5 +23,5 @@ export const useQueryFilters = (filters: Filters) => {
     });
 
     router.push(`?${query}`, { scroll: false });
-  }, [router, salary, selectedJobType, company, selectedYears, position]);
+  }, [router, salary, years, company, jobType, position, limit, page]);
 };

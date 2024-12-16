@@ -1,17 +1,39 @@
-import mongoose from 'mongoose';
-import { userService, UserService } from '../../core/user/user.service';
 import { JobModel } from './job.model';
 import { IJob } from './types/job.interface';
+import { PipelineFilters } from '../../middlewares/filterMiddleware';
 
 export class JobService {
-  constructor(
-    private jobModel: typeof JobModel,
-    private userService: UserService
-  ) {}
+  constructor(private jobModel: typeof JobModel) {}
 
-  public getJobs = async (): Promise<IJob[]> => {
-    const jobs = await this.jobModel.find({});
-    return jobs.map(JobService.toDTO);
+  public getJobs = async (filters: PipelineFilters[]): Promise<IJob[]> => {
+    const [jobs] = await this.jobModel.aggregate(filters);
+
+    return jobs.data.map(JobService.toDTO);
+  };
+
+  getJobsCount = async (filters: PipelineFilters[]): Promise<number> => {
+    const [jobs] = await this.jobModel.aggregate(filters);
+    return jobs.metadata[0].total;
+  };
+
+  public getJobCompanies = async (): Promise<
+    {
+      _id: string;
+      name: string;
+      logo: string;
+    }[]
+  > => {
+    const companies = await this.jobModel.aggregate([
+      {
+        $group: {
+          _id: '$company.name',
+          name: { $first: '$company.name' },
+          logo: { $first: '$company.logo' },
+        },
+      },
+    ]);
+
+    return companies;
   };
 
   private static toDTO(job: any): IJob {
@@ -91,4 +113,4 @@ export class JobService {
   }
 }
 
-export const jobService = new JobService(JobModel, userService);
+export const jobService = new JobService(JobModel);

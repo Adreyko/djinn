@@ -1,23 +1,21 @@
 'use client';
-import { useGetJobs } from '@/shared/api/hooks/job/useGetJobs';
 import { CardLoader } from '@/shared/components/ui/loaders/card-loader';
 import { IJob } from '@/shared/types/job/job.interface';
 import { LogsIcon } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
-import Title from './Title';
-import dayjs from 'dayjs';
+import { FC } from 'react';
 import { getCreatedTime } from '@/shared/lib/utils';
 
-const Jobs = () => {
-  const { data: jobs, isLoading } = useGetJobs();
-
+interface JobsProps {
+  jobs: IJob[];
+  isLoading: boolean;
+}
+const Jobs: FC<JobsProps> = ({ jobs, isLoading }) => {
   if (isLoading) {
     return new Array(5).fill(0).map((_, index) => <CardLoader key={index} />);
   }
   return (
     <>
-      <Title count={jobs?.length} />
       <div className='flex flex-col'>
         {jobs?.map((job) => (
           <JobCard key={job.id} {...job} />
@@ -32,7 +30,6 @@ const JobCard = ({
   title,
   description,
   salary,
-  employer,
   applicantsCount,
   location,
   requirements,

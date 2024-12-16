@@ -9,6 +9,15 @@ const config: Config = {
     './shared/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: {
+      padding: {
+        DEFAULT: '4rem',
+        sm: '6rem',
+        lg: '8rem',
+        xl: '10rem',
+        '2xl': '12rem',
+      },
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

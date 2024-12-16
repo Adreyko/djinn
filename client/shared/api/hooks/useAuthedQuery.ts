@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-query';
 import http from '../http';
 import { AxiosError } from 'axios';
+import { sleep } from '@/shared/lib/utils';
 
 const addAuthHeader = async (getToken: () => Promise<string | null>) => {
   const token = await getToken();
@@ -19,17 +20,25 @@ const addAuthHeader = async (getToken: () => Promise<string | null>) => {
 export function useAuthedQuery<TData = unknown, TError = unknown>(
   queryKey: QueryKey,
   url: string,
-  options?: Omit<UseQueryOptions<TData, TError>, 'queryKey' | 'queryFn'>
+  params?: Record<string, any>,
+  options?: Omit<UseQueryOptions<TData, TError>, 'queryKey' | 'queryFn'>,
+  sleepTime?: number
 ) {
   const { getToken } = useAuth();
 
   return useQuery<TData, TError>({
     queryKey,
-    queryFn: async () => {
-      const headers = await addAuthHeader(getToken);
-      const { data } = await http.get<TData>(url, { headers });
-      return data;
+
+    queryFn: async ({ signal }) => {
+      sleepTime && (await sleep(sleepTime));
+      if (!signal.aborted) {
+        const headers = await addAuthHeader(getToken);
+        const { data } = await http.get<TData>(url, { headers, params });
+        return data as TData;
+      }
+      throw new Error('Query was aborted');
     },
+    placeholderData: (prev) => prev,
     ...options,
   });
 }
